@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 // Fix: `useAuth` should be imported from `./hooks/useAuth`, not `./contexts/AuthContext`.
@@ -8,6 +7,7 @@ import { DataProvider } from './contexts/DataContext';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import WaiterDashboard from './pages/WaiterDashboard';
+import KitchenDashboard from './pages/KitchenDashboard';
 import MenuManagement from './pages/MenuManagement';
 import OrderTracking from './pages/OrderTracking';
 import OrderCreation from './pages/OrderCreation';
@@ -33,14 +33,18 @@ const Main: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {user && <Header />}
-      <main className="flex-grow p-4 md:p-6 lg:p-8">
+      {user && ![Role.KITCHEN, Role.BAR].includes(user.role) && <Header />}
+      <main className={`flex-grow p-4 md:p-6 lg:p-8 ${[Role.KITCHEN, Role.BAR].includes(user?.role as Role) ? '!p-2 sm:!p-4' : ''}`}>
         <Routes>
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
           
           <Route path="/" element={
               !user ? <Navigate to="/login" /> : (
-                user.role === Role.ADMIN ? <Navigate to="/admin" /> : <Navigate to="/waiter" />
+                user.role === Role.ADMIN ? <Navigate to="/admin" /> :
+                user.role === Role.WAITER ? <Navigate to="/waiter" /> :
+                user.role === Role.KITCHEN ? <Navigate to="/kitchen" /> :
+                user.role === Role.BAR ? <Navigate to="/bar" /> :
+                <Navigate to="/login" />
               )
             } 
           />
@@ -53,6 +57,9 @@ const Main: React.FC = () => {
           <Route path="/waiter/order/:tableId" element={<ProtectedRoute role={Role.WAITER}><OrderCreation /></ProtectedRoute>} />
           
           <Route path="/orders" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
+          
+          <Route path="/kitchen" element={<ProtectedRoute role={Role.KITCHEN}><KitchenDashboard screenType="kitchen" /></ProtectedRoute>} />
+          <Route path="/bar" element={<ProtectedRoute role={Role.BAR}><KitchenDashboard screenType="bar" /></ProtectedRoute>} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -73,8 +80,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return <Navigate to="/login" />;
   }
   
+  // Allow access if no specific role is required or if the user has the required role.
+  // Kitchen and Bar roles are allowed general access to '/orders' if needed, but not other roles' pages.
   if (role && user.role !== role) {
-    return <Navigate to="/" />;
+     return <Navigate to="/" />;
   }
 
   return children;

@@ -1,11 +1,12 @@
-
 import type { User, Dish, Table } from './types';
 import { Role, TableStatus } from './types';
 
 export const USERS: User[] = [
   { id: 1, name: 'Admin User', username: 'admin', role: Role.ADMIN, password: 'admin' },
-  { id: 2, name: 'John Waiter', username: 'john', role: Role.WAITER },
-  { id: 3, name: 'Jane Waiter', username: 'jane', role: Role.WAITER },
+  { id: 2, name: 'John Waiter', username: '101', role: Role.WAITER },
+  { id: 3, name: 'Jane Waiter', username: '102', role: Role.WAITER },
+  { id: 4, name: 'Kitchen Screen', username: 'kitchen', role: Role.KITCHEN, password: '111' },
+  { id: 5, name: 'Bar Screen', username: 'bar', role: Role.BAR, password: '222' },
 ];
 
 export const MENU_DISHES: Dish[] = [
@@ -56,6 +57,30 @@ export const MENU_DISHES: Dish[] = [
     price: 29.99,
     category: 'Main Course',
     imageUrl: 'https://picsum.photos/seed/steak/400/300',
+  },
+  {
+    id: 7,
+    name: 'Coca-Cola',
+    description: 'A classic refreshing soda.',
+    price: 2.50,
+    category: 'Drinks',
+    imageUrl: 'https://picsum.photos/seed/coke/400/300',
+  },
+  {
+    id: 8,
+    name: 'Orange Juice',
+    description: 'Freshly squeezed orange juice.',
+    price: 4.00,
+    category: 'Drinks',
+    imageUrl: 'https://picsum.photos/seed/oj/400/300',
+  },
+  {
+    id: 9,
+    name: 'Espresso',
+    description: 'Strong black coffee.',
+    price: 3.00,
+    category: 'Drinks',
+    imageUrl: 'https://picsum.photos/seed/espresso/400/300',
   },
 ];
 

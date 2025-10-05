@@ -1,30 +1,41 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
-    <meta charset="UTF-g" />
+    <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Culinary Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['Tajawal', 'sans-serif'],
+            },
             colors: {
-              'primary': '#8B2635',
-              'primary-light': '#A94A56',
-              'primary-dark': '#6E1F2A',
-              'secondary': '#F9F5F0',
-              'accent': '#D4AF37',
-              'neutral': '#E8E1D9',
+              'primary': '#0D2C4A',
+              'primary-light': '#2E506D',
+              'primary-dark': '#061D32',
+              'secondary': '#FDFBF8',
+              'accent': '#C7A27C',
+              'neutral': '#EAE7E3',
               'neutral-dark': '#2D2D2D',
-              'muted': '#F3F1EF',
+              'muted': '#F0F3F4',
               'danger': '#EF4444',
               'kitchen-primary': '#F26C4F',
               'kitchen-light': '#FEF3F2',
               'drinks-primary': '#0298C5',
               'drinks-light': '#F0F9FF',
+              'screen-kitchen': '#3B82F6',
+              'screen-kitchen-light': '#EFF6FF',
+              'screen-kitchen-dark': '#1D4ED8',
+              'screen-bar': '#16A34A',
+              'screen-bar-light': '#F0FDF4',
+              'screen-bar-dark': '#15803D',
             }
           }
         }
@@ -44,7 +55,7 @@
 }
 </script>
 </head>
-  <body class="bg-secondary">
+  <body class="bg-secondary font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

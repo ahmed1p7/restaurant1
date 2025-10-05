@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useCallback } from 'react';
 import type { User } from '../types';
 import { Role } from '../types';
@@ -21,8 +20,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     }
 
-    // Admin requires a password
-    if (foundUser.role === Role.ADMIN) {
+    // Admin, Kitchen, and Bar roles require a password
+    if ([Role.ADMIN, Role.KITCHEN, Role.BAR].includes(foundUser.role)) {
       if (foundUser.password === password) {
         setUser(foundUser);
         return true;
