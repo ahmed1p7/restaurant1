@@ -3,7 +3,6 @@ import { useAuth } from '../hooks/useAuth';
 import { User, KeyRound, Monitor, ChefHat, CupSoda, LogIn } from 'lucide-react';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
-import { logoBase64 } from '../assets/logo';
 
 type RoleType = 'waiter' | 'admin' | 'screens';
 
@@ -107,7 +106,7 @@ const Login: React.FC = () => {
             <div className="flex flex-col items-center justify-center p-6 sm:p-8">
                 <div className="w-full max-w-md space-y-8">
                     <div className="text-center">
-                        <img src={logoBase64} alt="SEA Logo" className="mx-auto h-20 w-auto" />
+                        <img src="/icon.svg" alt="SEA Logo" className="mx-auto h-20 w-auto" />
                         <h2 className="mt-4 text-3xl font-bold text-neutral-dark">
                             تسجيل الدخول
                         </h2>

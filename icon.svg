@@ -1,0 +1,12 @@
+<svg width="200" height="230" viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M100 25C127.614 25 150 47.3858 150 75V75" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M136 15L142 21" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M157 40L163 46" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M64 15L58 21" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M43 40L37 46" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M100 5V25" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M100 50C100 58.2843 100 69 100 69M100 69C100 69 85 69 85 69C85 69 85 85.0583 85 92C85 98.9417 89.4772 104 95 104H105C110.523 104 115 98.9417 115 92C115 85.0583 115 69 115 69H100Z" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20 125C40 115 60 115 80 125C100 135 120 135 140 125C160 115 180 115 200 125" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<path d="M0 140C20 130 40 130 60 140C80 150 100 150 120 140C140 130 160 130 180 140" stroke="#F0EAD6" stroke-width="8" stroke-linecap="round"/>
+<text fill="#F0EAD6" style="font-size: 64px; font-family: 'Times New Roman', serif; font-weight: bold; text-anchor: middle;" x="100" y="200">SEA</text>
+</svg>
