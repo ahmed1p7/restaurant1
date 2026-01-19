@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, ShoppingCart, BarChart2 } from 'lucide-react';
+import { BookOpen, ShoppingCart, BarChart2, User, Calendar, Users } from 'lucide-react';
 import Card from '../components/Card';
 import { useRestaurantData } from '../hooks/useRestaurantData';
 import { OrderStatus } from '../types';
@@ -22,6 +22,10 @@ const AdminDashboard: React.FC = () => {
 
   const actionCards = [
     { title: 'Manage Menu', path: '/admin/menu', icon: BookOpen, description: 'Add, edit, or remove dishes from the menu.' },
+    { title: 'Manage Inventory', path: '/admin/inventory', icon: ShoppingCart, description: 'Track ingredients and manage stock levels.' },
+    { title: 'Manage Customers', path: '/admin/customers', icon: User, description: 'Manage customer profiles and preferences.' },
+    { title: 'Manage Staff', path: '/admin/staff', icon: Users, description: 'Manage employee information and schedules.' },
+    { title: 'Manage Reservations', path: '/admin/reservations', icon: Calendar, description: 'Handle table reservations and bookings.' },
     { title: 'View All Orders', path: '/orders', icon: ShoppingCart, description: 'Track all incoming and completed orders.' },
     { title: 'View Reports', path: '/admin/reports', icon: BarChart2, description: 'Analyze sales and performance data.' },
   ];
