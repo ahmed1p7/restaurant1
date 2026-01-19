@@ -1,6 +1,6 @@
+
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
-// Fix: `useAuth` should be imported from `./hooks/useAuth`, not `./contexts/AuthContext`.
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import { DataProvider } from './contexts/DataContext';
@@ -32,9 +32,9 @@ const Main: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-secondary">
       {user && ![Role.KITCHEN, Role.BAR].includes(user.role) && <Header />}
-      <main className={`flex-grow p-4 md:p-6 lg:p-8 ${[Role.KITCHEN, Role.BAR].includes(user?.role as Role) ? '!p-2 sm:!p-4' : ''}`}>
+      <main className={`flex-grow ${user && [Role.KITCHEN, Role.BAR].includes(user.role) ? 'p-0' : 'p-4 md:p-6 lg:p-8'}`}>
         <Routes>
           <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
           
@@ -80,8 +80,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
     return <Navigate to="/login" />;
   }
   
-  // Allow access if no specific role is required or if the user has the required role.
-  // Kitchen and Bar roles are allowed general access to '/orders' if needed, but not other roles' pages.
   if (role && user.role !== role) {
      return <Navigate to="/" />;
   }

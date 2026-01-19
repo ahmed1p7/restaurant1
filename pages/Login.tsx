@@ -1,241 +1,86 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { User, KeyRound, Monitor, ChefHat, CupSoda, LogIn } from 'lucide-react';
+import { LogIn, User, KeyRound, Monitor, ChefHat, Coffee } from 'lucide-react';
 import Button from '../components/Button';
 import Modal from '../components/Modal';
 
-type RoleType = 'waiter' | 'admin' | 'screens';
-
-// Moved InputField outside to prevent it from being re-created on each render,
-// which caused the input to lose focus and the keyboard to disappear.
-const InputField: React.FC<{
-  id: string;
-  type: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  Icon: React.ElementType;
-  disabled?: boolean;
-}> = ({ id, type, placeholder, value, onChange, Icon, disabled = false }) => (
-  <div className="relative">
-    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-      <Icon className="h-5 w-5 text-neutral-dark/40" />
-    </div>
-    <input
-      id={id}
-      name={id}
-      type={type}
-      required
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      className="block w-full pr-10 pl-3 py-3 border border-neutral/30 rounded-lg shadow-sm bg-secondary placeholder-neutral-dark/50 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light text-lg"
-      placeholder={placeholder}
-    />
-  </div>
-);
-
-
 const Login: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<RoleType>('waiter');
-  const [identifier, setIdentifier] = useState('');
+  const [role, setRole] = useState<'admin' | 'waiter' | 'screens'>('waiter');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { login } = useAuth();
-  
   const [screenLogin, setScreenLogin] = useState<'kitchen' | 'bar' | null>(null);
-  const [screenCode, setScreenCode] = useState('');
+  const { login } = useAuth();
 
-  const handleWaiterAdminSubmit = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    let success = false;
-    if (selectedRole === 'admin') {
-      success = login('admin', password);
-    } else if (selectedRole === 'waiter') {
-      success = login(identifier);
-    }
-    
-    if (!success) {
-      setError('بيانات تسجيل الدخول غير صالحة.');
-    }
+    login(username || 'admin', password);
   };
-
-  const handleScreenLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    let success = false;
-    if (screenLogin === 'kitchen') {
-        success = login('kitchen', screenCode);
-    } else if (screenLogin === 'bar') {
-        success = login('bar', screenCode);
-    }
-    
-    if (!success) {
-      setError(`الرمز غير صحيح لشاشة ${screenLogin === 'kitchen' ? 'المطبخ' : 'المشروبات'}.`);
-    } else {
-      setScreenLogin(null);
-      setScreenCode('');
-    }
-  };
-
-  const handleRoleChange = (role: RoleType) => {
-    setSelectedRole(role);
-    setIdentifier('');
-    setPassword('');
-    setError('');
-  }
-
-  const RoleButton = ({ role, label, Icon }: { role: RoleType, label: string, Icon: React.ElementType }) => (
-    <button
-      type="button"
-      onClick={() => handleRoleChange(role)}
-      className={`flex-1 p-3 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 ${
-        selectedRole === role
-          ? 'bg-primary text-white shadow-lg scale-105'
-          : 'bg-muted text-neutral-dark/80 hover:bg-neutral'
-      }`}
-    >
-      <Icon size={20} />
-      <span>{label}</span>
-    </button>
-  );
 
   return (
-    <div className="min-h-screen bg-secondary">
-        <div className="grid md:grid-cols-2 h-screen">
-            <div className="relative hidden md:flex flex-col justify-end p-12 bg-cover bg-center text-white" style={{ backgroundImage: "url('https://picsum.photos/seed/seaside-restaurant/1000/1200')"}}>
-                <div className="absolute inset-0 bg-neutral-dark opacity-60"></div>
-                <div className="relative z-10">
-                    <h1 className="text-5xl font-bold leading-tight">Welcome to SEA</h1>
-                    <p className="mt-4 text-lg max-w-md opacity-90">
-                        The heart of your restaurant's operations, reimagined for the coast.
-                    </p>
-                </div>
-            </div>
-            
-            <div className="flex flex-col items-center justify-center p-6 sm:p-8">
-                <div className="w-full max-w-md space-y-8">
-                    <div className="text-center">
-                        <img src="/icon.svg" alt="SEA Logo" className="mx-auto h-20 w-auto" />
-                        <h2 className="mt-4 text-3xl font-bold text-neutral-dark">
-                            تسجيل الدخول
-                        </h2>
-                        <p className="mt-2 text-neutral-dark/70">
-                            اختر دورك للبدء
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 p-1.5 rounded-xl bg-muted">
-                      <RoleButton role="admin" label="مشرف" Icon={KeyRound} />
-                      <RoleButton role="waiter" label="نادل" Icon={User} />
-                      <RoleButton role="screens" label="شاشات" Icon={Monitor} />
-                    </div>
-
-                    <div className="animate-fade-in">
-                        {selectedRole !== 'screens' ? (
-                            <form onSubmit={handleWaiterAdminSubmit} className="space-y-6">
-                                {selectedRole === 'waiter' && (
-                                    <InputField 
-                                        id="waiterId"
-                                        type="text"
-                                        placeholder="رقم النادل (e.g., 101)"
-                                        value={identifier}
-                                        onChange={(e) => setIdentifier(e.target.value)}
-                                        Icon={User}
-                                    />
-                                )}
-                                {selectedRole === 'admin' && (
-                                    <>
-                                        <InputField 
-                                            id="adminUser"
-                                            type="text"
-                                            placeholder=""
-                                            value="admin"
-                                            onChange={() => {}}
-                                            Icon={User}
-                                            disabled={true}
-                                        />
-                                        <InputField 
-                                            id="password"
-                                            type="password"
-                                            placeholder="كلمة المرور"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            Icon={KeyRound}
-                                        />
-                                    </>
-                                )}
-                                {/* Fix: Removed redundant selectedRole !== 'screens' comparison. selectedRole is already narrowed here. */}
-                                {error && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
-                                <Button type="submit" className="w-full !py-3 !text-base !font-bold" Icon={LogIn}>
-                                    {selectedRole === 'waiter' ? 'تسجيل الدخول كنادل' : 'تسجيل الدخول كمشرف'}
-                                </Button>
-                            </form>
-                        ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <button onClick={() => setScreenLogin('kitchen')} className="text-center p-6 bg-screen-kitchen-light border-2 border-screen-kitchen-light hover:border-screen-kitchen rounded-xl space-y-2 transition-all duration-200 group">
-                                    <ChefHat size={40} className="mx-auto text-screen-kitchen transition-transform group-hover:scale-110" />
-                                    <h3 className="font-bold text-lg text-screen-kitchen-dark">شاشة المطبخ</h3>
-                                </button>
-                                <button onClick={() => setScreenLogin('bar')} className="text-center p-6 bg-screen-bar-light border-2 border-screen-bar-light hover:border-screen-bar rounded-xl space-y-2 transition-all duration-200 group">
-                                    <CupSoda size={40} className="mx-auto text-screen-bar transition-transform group-hover:scale-110" />
-                                    <h3 className="font-bold text-lg text-screen-bar-dark">شاشة المشروبات</h3>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                     {selectedRole === 'waiter' && (
-                        <div className="text-center text-xs text-neutral-dark/60">
-                            <p>:للتجربة، استخدم</p>
-                            <p>101, 102 :نادل</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-primary p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="p-8 text-center bg-primary-dark text-white">
+          <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+            <LogIn size={40} />
+          </div>
+          <h1 className="text-3xl font-bold">ياقوت</h1>
+          <p className="opacity-70">نظام إدارة المطاعم الذكي</p>
         </div>
 
-        <Modal 
-            isOpen={!!screenLogin} 
-            onClose={() => {
-                setScreenLogin(null);
-                setScreenCode('');
-                setError('');
-            }}
-            title={`دخول شاشة ${screenLogin === 'kitchen' ? 'المطبخ' : 'المشروبات'}`}
-        >
-            <form onSubmit={handleScreenLoginSubmit} className="space-y-4">
-                <p className="text-neutral-dark/80 text-center">أدخل الرمز الخاص بالشاشة.</p>
-                <InputField
-                    id="screenCode"
-                    type="password"
-                    placeholder="****"
-                    value={screenCode}
-                    onChange={(e) => setScreenCode(e.target.value)}
-                    Icon={KeyRound}
+        <div className="p-8">
+          <div className="flex gap-2 mb-8 bg-muted p-1 rounded-lg">
+            {(['admin', 'waiter', 'screens'] as const).map(r => (
+              <button
+                key={r}
+                onClick={() => setRole(r)}
+                className={`flex-1 py-2 rounded-md text-sm font-bold transition-all ${role === r ? 'bg-primary text-white shadow' : 'text-neutral-dark opacity-60'}`}
+              >
+                {r === 'admin' ? 'مشرف' : r === 'waiter' ? 'نادل' : 'شاشات'}
+              </button>
+            ))}
+          </div>
+
+          {role !== 'screens' ? (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="relative">
+                <User className="absolute right-3 top-3 text-neutral-dark opacity-40" size={20} />
+                <input
+                  type="text"
+                  placeholder={role === 'admin' ? 'اسم المستخدم' : 'رقم النادل'}
+                  className="w-full pr-10 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
                 />
-                {/* Fix: Removed redundant selectedRole === 'screens' comparison to keep it consistent with the form above. */}
-                {error && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
-
-                 <p className="text-center text-xs text-neutral-dark/60">
-                    الرمز للتجربة: {screenLogin === 'kitchen' ? '111' : '222'}
-                </p>
-                <Button type="submit" className="w-full !py-3 !text-base">
-                    دخول
-                </Button>
+              </div>
+              {role === 'admin' && (
+                <div className="relative">
+                  <KeyRound className="absolute right-3 top-3 text-neutral-dark opacity-40" size={20} />
+                  <input
+                    type="password"
+                    placeholder="كلمة المرور"
+                    className="w-full pr-10 pl-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                  />
+                </div>
+              )}
+              <Button type="submit" className="w-full py-4 text-lg">تسجيل الدخول</Button>
             </form>
-        </Modal>
-
-        <style>{`
-          .animate-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-          }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => login('kitchen', '111')} className="p-6 border-2 border-primary-light rounded-xl hover:bg-primary-light hover:text-white transition-all flex flex-col items-center gap-2">
+                <ChefHat size={40} />
+                <span className="font-bold">المطبخ</span>
+              </button>
+              <button onClick={() => login('bar', '222')} className="p-6 border-2 border-drinks-primary rounded-xl hover:bg-drinks-primary hover:text-white transition-all flex flex-col items-center gap-2">
+                <Coffee size={40} />
+                <span className="font-bold">المشروبات</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
