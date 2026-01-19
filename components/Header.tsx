@@ -11,6 +11,10 @@ const Header: React.FC = () => {
   const navLinks = user?.role === Role.ADMIN ? [
     { path: '/admin', label: 'Dashboard' },
     { path: '/admin/menu', label: 'Menu' },
+    { path: '/admin/inventory', label: 'Inventory' },
+    { path: '/admin/customers', label: 'Customers' },
+    { path: '/admin/staff', label: 'Staff' },
+    { path: '/admin/reservations', label: 'Reservations' },
     { path: '/orders', label: 'Orders' },
     { path: '/admin/reports', label: 'Reports' },
   ] : [
