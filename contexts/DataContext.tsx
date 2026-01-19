@@ -1,27 +1,48 @@
 
-import React, { createContext, useState, useCallback } from 'react';
-import type { Dish, Order, OrderItem, Table } from '../types';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
+import type { Dish, Order, OrderItem, Table, ScreenSettings } from '../types';
 import { OrderStatus, TableStatus } from '../types';
 import { MENU_DISHES, TABLES } from '../constants';
 
-// Fix: Removed unused import of useAuth.
 interface DataContextType {
   dishes: Dish[];
   orders: Order[];
   tables: Table[];
+  screenSettings: ScreenSettings;
   addDish: (dish: Omit<Dish, 'id' | 'imageUrl'>) => void;
   updateDish: (dish: Dish) => void;
   deleteDish: (dishId: number) => void;
   createOrder: (tableId: number, items: OrderItem[], waiterId: number) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  updateScreenSettings: (settings: ScreenSettings) => void;
 }
 
 export const DataContext = createContext<DataContextType | undefined>(undefined);
+
+const DEFAULT_SCREEN_SETTINGS: ScreenSettings = {
+  kitchenCategories: ['الأطباق الرئيسية', 'المقبلات', 'الحلويات'],
+  barCategories: ['المشروبات'],
+};
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [dishes, setDishes] = useState<Dish[]>(MENU_DISHES);
   const [orders, setOrders] = useState<Order[]>([]);
   const [tables, setTables] = useState<Table[]>(TABLES);
+  const [screenSettings, setScreenSettings] = useState<ScreenSettings>(DEFAULT_SCREEN_SETTINGS);
+
+  // Sync settings if new categories appear that aren't mapped yet
+  useEffect(() => {
+    const allCategories = Array.from(new Set(dishes.map(d => d.category)));
+    const mappedCategories = [...screenSettings.kitchenCategories, ...screenSettings.barCategories];
+    const unmapped = allCategories.filter(cat => !mappedCategories.includes(cat));
+    
+    if (unmapped.length > 0) {
+      setScreenSettings(prev => ({
+        ...prev,
+        kitchenCategories: [...prev.kitchenCategories, ...unmapped]
+      }));
+    }
+  }, [dishes]);
 
   const addDish = useCallback((dishData: Omit<Dish, 'id' | 'imageUrl'>) => {
     setDishes(prev => [
@@ -69,9 +90,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       })
     );
   }, []);
+
+  const updateScreenSettings = useCallback((settings: ScreenSettings) => {
+    setScreenSettings(settings);
+  }, []);
   
   return (
-    <DataContext.Provider value={{ dishes, orders, tables, addDish, updateDish, deleteDish, createOrder, updateOrderStatus }}>
+    <DataContext.Provider value={{ 
+      dishes, 
+      orders, 
+      tables, 
+      screenSettings,
+      addDish, 
+      updateDish, 
+      deleteDish, 
+      createOrder, 
+      updateOrderStatus,
+      updateScreenSettings
+    }}>
       {children}
     </DataContext.Provider>
   );

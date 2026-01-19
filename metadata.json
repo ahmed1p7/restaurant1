@@ -1,5 +1,5 @@
 {
-  "name": "Culinary Command Center",
-  "description": "A sleek and modern restaurant management system for admins and waiters. It features role-based access, menu management, order creation and tracking, and basic reporting, all wrapped in a touch-friendly interface with a warm, professional design.",
+  "name": "ياقوت لإدارة المطاعم",
+  "description": "نظام متطور وشامل لإدارة المطاعم، يتميز بواجهات ذكية للمشرفين والنوادل، مع تتبع دقيق للطلبات وتقارير مبيعات مفصلة.",
   "requestFramePermissions": []
 }

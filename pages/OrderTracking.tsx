@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { useRestaurantData } from '../hooks/useRestaurantData';
 import type { Order } from '../types';
@@ -6,7 +7,7 @@ import Card from '../components/Card';
 import { useAuth } from '../hooks/useAuth';
 import { Role } from '../types';
 import Button from '../components/Button';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Clock } from 'lucide-react';
 
 const OrderCard: React.FC<{ order: Order, onStatusChange: (orderId: string, newStatus: OrderStatus) => void }> = ({ order, onStatusChange }) => {
     const { user } = useAuth();
@@ -23,37 +24,50 @@ const OrderCard: React.FC<{ order: Order, onStatusChange: (orderId: string, newS
 
     const nextStatus = getNextStatus(order.status);
     
+    const getStatusLabel = (status: OrderStatus) => {
+        switch(status) {
+            case OrderStatus.NEW: return "جديد";
+            case OrderStatus.IN_PROGRESS: return "قيد التحضير";
+            case OrderStatus.READY: return "جاهز";
+            case OrderStatus.COMPLETED: return "مكتمل";
+            default: return status;
+        }
+    }
+
     return (
-        <Card className="p-4 flex flex-col justify-between">
+        <Card className="p-4 flex flex-col justify-between border-t-4 border-accent animate-fade-in">
             <div>
                 <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-bold text-lg">Table {order.tableId}</h3>
-                    <span className="text-sm text-neutral-dark opacity-70">{order.id}</span>
+                    <h3 className="font-bold text-lg">طاولة {order.tableId}</h3>
+                    <div className="flex items-center gap-1 text-xs text-neutral-dark opacity-60">
+                        <Clock size={12}/>
+                        <span>{order.id.split('-')[1].slice(-4)}</span>
+                    </div>
                 </div>
                 <ul className="space-y-2 text-sm mb-4">
                     {order.items.map((item, index) => (
-                        <li key={index}>
-                            <div className="flex justify-between">
+                        <li key={index} className="border-b border-neutral/30 pb-1">
+                            <div className="flex justify-between font-medium">
                                 <span>{item.quantity}x {item.dish.name}</span>
-                                <span>${(item.dish.price * item.quantity).toFixed(2)}</span>
+                                <span>{(item.dish.price * item.quantity).toFixed(2)}</span>
                             </div>
                             {item.notes && (
-                                <div className="mt-1 flex items-start text-xs text-neutral-dark opacity-90 bg-muted rounded p-2">
-                                    <MessageSquare className="h-4 w-4 mr-2 flex-shrink-0 text-primary opacity-70" />
+                                <div className="mt-1 flex items-start text-xs text-neutral-dark opacity-90 bg-muted rounded p-1.5">
+                                    <MessageSquare className="h-3 w-3 ml-1 flex-shrink-0 text-accent opacity-70" />
                                     <p className="italic leading-tight">{item.notes}</p>
                                 </div>
                             )}
                         </li>
                     ))}
                 </ul>
-                <div className="border-t pt-2 mt-2 flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                <div className="pt-2 flex justify-between font-bold text-primary">
+                    <span>الإجمالي</span>
+                    <span>{total.toFixed(2)} ر.س</span>
                 </div>
             </div>
             {user?.role === Role.WAITER && nextStatus && (
                 <Button className="w-full mt-4" onClick={() => onStatusChange(order.id, nextStatus)}>
-                    Mark as {nextStatus}
+                    نقل إلى: {getStatusLabel(nextStatus)}
                 </Button>
             )}
         </Card>
@@ -63,19 +77,33 @@ const OrderCard: React.FC<{ order: Order, onStatusChange: (orderId: string, newS
 
 const OrderColumn: React.FC<{ title: OrderStatus; orders: Order[]; onStatusChange: (orderId: string, newStatus: OrderStatus) => void }> = ({ title, orders, onStatusChange }) => {
     const statusColors = {
-        [OrderStatus.NEW]: 'bg-drinks-light',
-        [OrderStatus.IN_PROGRESS]: 'bg-kitchen-light',
-        [OrderStatus.READY]: 'bg-green-100',
-        [OrderStatus.COMPLETED]: 'bg-muted',
-        [OrderStatus.CANCELLED]: 'bg-red-100'
+        [OrderStatus.NEW]: 'bg-drinks-light/50 border-drinks-primary',
+        [OrderStatus.IN_PROGRESS]: 'bg-kitchen-light/50 border-kitchen-primary',
+        [OrderStatus.READY]: 'bg-green-50 border-green-500',
+        [OrderStatus.COMPLETED]: 'bg-muted border-neutral-dark',
+        [OrderStatus.CANCELLED]: 'bg-red-50 border-danger'
     };
+
+    const statusLabels = {
+        [OrderStatus.NEW]: "طلبات جديدة",
+        [OrderStatus.IN_PROGRESS]: "قيد التنفيذ",
+        [OrderStatus.READY]: "جاهزة للتقديم",
+        [OrderStatus.COMPLETED]: "طلبات مكتملة",
+        [OrderStatus.CANCELLED]: "ملغاة"
+    };
+
     return (
-        <div className={`${statusColors[title]} rounded-lg p-4`}>
-            <h2 className="text-lg font-bold mb-4 text-neutral-dark">{title} ({orders.length})</h2>
+        <div className={`${statusColors[title]} rounded-lg p-4 border-t-8 h-full min-h-[500px]`}>
+            <h2 className="text-xl font-bold mb-4 text-neutral-dark border-b border-neutral pb-2">
+                {statusLabels[title]} ({orders.length})
+            </h2>
             <div className="space-y-4">
                 {orders.map(order => (
                     <OrderCard key={order.id} order={order} onStatusChange={onStatusChange} />
                 ))}
+                {orders.length === 0 && (
+                    <p className="text-center py-10 text-neutral-dark opacity-30 italic">لا يوجد طلبات</p>
+                )}
             </div>
         </div>
     )
@@ -98,10 +126,10 @@ const OrderTracking: React.FC = () => {
   const orderColumns: OrderStatus[] = [OrderStatus.NEW, OrderStatus.IN_PROGRESS, OrderStatus.READY, OrderStatus.COMPLETED];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-neutral-dark">Order Tracking</h1>
-        <p className="mt-1 text-neutral-dark opacity-75">Live view of all orders in the kitchen.</p>
+        <h1 className="text-3xl font-bold text-neutral-dark">متابعة الطلبات</h1>
+        <p className="mt-1 text-neutral-dark opacity-75">عرض حي لكافة الطلبات في المطبخ والصالة.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
         {orderColumns.map(status => (

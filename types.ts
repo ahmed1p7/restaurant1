@@ -1,3 +1,4 @@
+
 export enum Role {
   ADMIN = 'admin',
   WAITER = 'waiter',
@@ -54,4 +55,9 @@ export interface Table {
     id: number;
     capacity: number;
     status: TableStatus;
+}
+
+export interface ScreenSettings {
+  kitchenCategories: string[];
+  barCategories: string[];
 }

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { User, KeyRound, Monitor, ChefHat, CupSoda, LogIn } from 'lucide-react';
@@ -5,6 +6,36 @@ import Button from '../components/Button';
 import Modal from '../components/Modal';
 
 type RoleType = 'waiter' | 'admin' | 'screens';
+
+// Moved InputField outside to prevent it from being re-created on each render,
+// which caused the input to lose focus and the keyboard to disappear.
+const InputField: React.FC<{
+  id: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  Icon: React.ElementType;
+  disabled?: boolean;
+}> = ({ id, type, placeholder, value, onChange, Icon, disabled = false }) => (
+  <div className="relative">
+    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+      <Icon className="h-5 w-5 text-neutral-dark/40" />
+    </div>
+    <input
+      id={id}
+      name={id}
+      type={type}
+      required
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      className="block w-full pr-10 pl-3 py-3 border border-neutral/30 rounded-lg shadow-sm bg-secondary placeholder-neutral-dark/50 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light text-lg"
+      placeholder={placeholder}
+    />
+  </div>
+);
+
 
 const Login: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<RoleType>('waiter');
@@ -69,25 +100,6 @@ const Login: React.FC = () => {
       <Icon size={20} />
       <span>{label}</span>
     </button>
-  );
-  
-  const InputField: React.FC<{id: string, type: string, placeholder: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, Icon: React.ElementType, disabled?: boolean}> = ({ id, type, placeholder, value, onChange, Icon, disabled = false }) => (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Icon className="h-5 w-5 text-neutral-dark/40" />
-      </div>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        required
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        className="block w-full pl-10 pr-3 py-3 border border-neutral/30 rounded-lg shadow-sm bg-secondary placeholder-neutral-dark/50 focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light text-lg text-center"
-        placeholder={placeholder}
-      />
-    </div>
   );
 
   return (
@@ -155,7 +167,8 @@ const Login: React.FC = () => {
                                         />
                                     </>
                                 )}
-                                {error && selectedRole !== 'screens' && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
+                                {/* Fix: Removed redundant selectedRole !== 'screens' comparison. selectedRole is already narrowed here. */}
+                                {error && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
                                 <Button type="submit" className="w-full !py-3 !text-base !font-bold" Icon={LogIn}>
                                     {selectedRole === 'waiter' ? 'تسجيل الدخول كنادل' : 'تسجيل الدخول كمشرف'}
                                 </Button>
@@ -202,7 +215,8 @@ const Login: React.FC = () => {
                     onChange={(e) => setScreenCode(e.target.value)}
                     Icon={KeyRound}
                 />
-                {error && selectedRole === 'screens' && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
+                {/* Fix: Removed redundant selectedRole === 'screens' comparison to keep it consistent with the form above. */}
+                {error && <p className="text-sm text-danger text-center font-semibold">{error}</p>}
 
                  <p className="text-center text-xs text-neutral-dark/60">
                     الرمز للتجربة: {screenLogin === 'kitchen' ? '111' : '222'}

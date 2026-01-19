@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRestaurantData } from '../hooks/useRestaurantData';
@@ -5,7 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import type { OrderItem, Dish } from '../types';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { Plus, Minus, Trash2, ShoppingCart, MessageSquare } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, MessageSquare } from 'lucide-react';
 
 const OrderCreation: React.FC = () => {
   const { tableId } = useParams();
@@ -14,7 +15,7 @@ const OrderCreation: React.FC = () => {
   const { dishes, createOrder } = useRestaurantData();
   const [currentOrderItems, setCurrentOrderItems] = useState<OrderItem[]>([]);
   
-  const QUICK_NOTES = ['No onions', 'Extra spicy', 'Allergy', 'Side of sauce'];
+  const QUICK_NOTES = ['بدون بصل', 'حار زيادة', 'حساسية طعام', 'صوص جانبي'];
   const numericTableId = Number(tableId);
 
   if (!user) {
@@ -76,23 +77,23 @@ const OrderCreation: React.FC = () => {
   const categories = [...new Set(dishes.map(d => d.category))];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
       <div className="lg:col-span-2 space-y-6">
         <div>
-            <h1 className="text-3xl font-bold text-neutral-dark">New Order for Table {tableId}</h1>
-            <p className="mt-1 text-neutral-dark opacity-75">Select dishes to add to the order.</p>
+            <h1 className="text-3xl font-bold text-neutral-dark">طلب جديد لطاولة {tableId}</h1>
+            <p className="mt-1 text-neutral-dark opacity-75">اختر الأطباق لإضافتها إلى الطلب.</p>
         </div>
         {categories.map(category => (
             <div key={category}>
-                <h2 className="text-2xl font-semibold text-primary mb-4">{category}</h2>
+                <h2 className="text-2xl font-semibold text-primary mb-4 border-r-4 border-accent pr-3">{category}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                     {dishes.filter(d => d.category === category).map(dish => (
-                        <Card key={dish.id} className="flex flex-col cursor-pointer" onClick={() => addToOrder(dish)}>
-                            <img src={dish.imageUrl} alt={dish.name} className="w-full h-40 object-cover rounded-t-lg" />
+                        <Card key={dish.id} className="flex flex-col cursor-pointer overflow-hidden hover:scale-105 transition-transform" onClick={() => addToOrder(dish)}>
+                            <img src={dish.imageUrl} alt={dish.name} className="w-full h-40 object-cover" />
                             <div className="p-3 flex-grow flex flex-col justify-between">
                                 <div>
                                     <h3 className="font-semibold text-neutral-dark">{dish.name}</h3>
-                                    <p className="text-neutral-dark opacity-80 text-sm">${dish.price.toFixed(2)}</p>
+                                    <p className="text-primary font-bold text-sm">{dish.price.toFixed(2)} ر.س</p>
                                 </div>
                             </div>
                         </Card>
@@ -102,38 +103,41 @@ const OrderCreation: React.FC = () => {
         ))}
       </div>
       <div className="lg:col-span-1">
-        <Card className="sticky top-24">
+        <Card className="sticky top-24 shadow-2xl border-t-4 border-accent">
             <div className="p-4 border-b">
-                <h2 className="text-xl font-semibold text-neutral-dark">Current Order</h2>
-                <p className="text-sm text-neutral-dark opacity-80">Table {tableId}</p>
+                <h2 className="text-xl font-semibold text-neutral-dark">ملخص الطلب</h2>
+                <p className="text-sm text-neutral-dark opacity-80">طاولة {tableId}</p>
             </div>
             <div className="p-4 divide-y divide-neutral max-h-[60vh] overflow-y-auto">
                 {currentOrderItems.length === 0 ? (
-                    <p className="text-neutral-dark opacity-80 text-center py-8">No items added yet.</p>
+                    <div className="text-center py-12">
+                        <ShoppingCart size={48} className="mx-auto text-neutral opacity-40 mb-3" />
+                        <p className="text-neutral-dark opacity-50">لم يتم إضافة أطباق بعد.</p>
+                    </div>
                 ) : (
                     currentOrderItems.map(item => (
                         <div key={item.dish.id} className="py-3">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium">{item.dish.name}</p>
-                                    <p className="text-sm text-neutral-dark opacity-80">${item.dish.price.toFixed(2)}</p>
+                                    <p className="text-sm text-neutral-dark opacity-80">{item.dish.price.toFixed(2)} ر.س</p>
                                 </div>
-                                <div className="flex items-center space-x-2">
+                                <div className="flex items-center space-x-reverse space-x-2">
                                     <Button size="sm" variant="secondary" className="p-1 h-7 w-7" onClick={() => updateQuantity(item.dish.id, -1)}><Minus size={16}/></Button>
-                                    <span className="w-6 text-center font-medium">{item.quantity}</span>
+                                    <span className="w-6 text-center font-bold">{item.quantity}</span>
                                     <Button size="sm" variant="secondary" className="p-1 h-7 w-7" onClick={() => updateQuantity(item.dish.id, 1)}><Plus size={16}/></Button>
                                 </div>
                             </div>
                             <div className="relative mt-2">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <MessageSquare className="h-4 w-4 text-neutral-dark opacity-60" />
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Add notes..."
+                                    placeholder="أضف ملاحظات..."
                                     value={item.notes}
                                     onChange={(e) => updateItemNotes(item.dish.id, e.target.value)}
-                                    className="pl-9 pr-2 py-1 text-sm block w-full border border-neutral rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+                                    className="pr-9 pl-2 py-1 text-sm block w-full border border-neutral rounded-md focus:outline-none focus:ring-primary focus:border-primary"
                                 />
                             </div>
                             <div className="mt-2 flex flex-wrap gap-1">
@@ -154,12 +158,12 @@ const OrderCreation: React.FC = () => {
             </div>
             {currentOrderItems.length > 0 && (
                 <div className="p-4 border-t bg-muted rounded-b-lg">
-                    <div className="flex justify-between font-bold text-lg mb-4">
-                        <span>Total:</span>
-                        <span>${total.toFixed(2)}</span>
+                    <div className="flex justify-between font-bold text-xl mb-4">
+                        <span>الإجمالي:</span>
+                        <span className="text-primary">{total.toFixed(2)} ر.س</span>
                     </div>
-                    <Button className="w-full" Icon={ShoppingCart} onClick={handlePlaceOrder} disabled={currentOrderItems.length === 0}>
-                        Place Order
+                    <Button className="w-full !py-3 text-lg font-bold" Icon={ShoppingCart} onClick={handlePlaceOrder}>
+                        إرسال الطلب للمطبخ
                     </Button>
                 </div>
             )}

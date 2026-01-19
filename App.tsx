@@ -13,11 +13,6 @@ import OrderTracking from './pages/OrderTracking';
 import OrderCreation from './pages/OrderCreation';
 import Reports from './pages/Reports';
 import NotFound from './pages/NotFound';
-import InventoryManagement from './pages/InventoryManagement';
-import CustomerManagement from './pages/CustomerManagement';
-import ReservationManagement from './pages/ReservationManagement';
-import StaffManagement from './pages/StaffManagement';
-import DashboardOverview from './pages/DashboardOverview';
 import Header from './components/Header';
 import { Role } from './types';
 
@@ -57,10 +52,6 @@ const Main: React.FC = () => {
           <Route path="/admin" element={<ProtectedRoute role={Role.ADMIN}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/menu" element={<ProtectedRoute role={Role.ADMIN}><MenuManagement /></ProtectedRoute>} />
           <Route path="/admin/reports" element={<ProtectedRoute role={Role.ADMIN}><Reports /></ProtectedRoute>} />
-          <Route path="/admin/inventory" element={<ProtectedRoute role={Role.ADMIN}><InventoryManagement /></ProtectedRoute>} />
-          <Route path="/admin/customers" element={<ProtectedRoute role={Role.ADMIN}><CustomerManagement /></ProtectedRoute>} />
-          <Route path="/admin/reservations" element={<ProtectedRoute role={Role.ADMIN}><ReservationManagement /></ProtectedRoute>} />
-          <Route path="/admin/staff" element={<ProtectedRoute role={Role.ADMIN}><StaffManagement /></ProtectedRoute>} />
           
           <Route path="/waiter" element={<ProtectedRoute role={Role.WAITER}><WaiterDashboard /></ProtectedRoute>} />
           <Route path="/waiter/order/:tableId" element={<ProtectedRoute role={Role.WAITER}><OrderCreation /></ProtectedRoute>} />
