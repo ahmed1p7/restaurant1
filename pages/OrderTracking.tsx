@@ -1,16 +1,17 @@
 
 import React, { useMemo } from 'react';
 import { useRestaurantData } from '../hooks/useRestaurantData';
-import type { Order } from '../types';
-import { OrderStatus } from '../types';
+import type { Order, LocalizedString } from '../types';
+import { OrderStatus, Role } from '../types';
 import Card from '../components/Card';
 import { useAuth } from '../hooks/useAuth';
-import { Role } from '../types';
 import Button from '../components/Button';
 import { MessageSquare, Clock } from 'lucide-react';
 
 const OrderCard: React.FC<{ order: Order, onStatusChange: (orderId: string, newStatus: OrderStatus) => void }> = ({ order, onStatusChange }) => {
     const { user } = useAuth();
+    // Get current language for localized dish names from LocalizedString object
+    const lang = (localStorage.getItem('lang') as any) || 'ar';
     const total = order.items.reduce((sum, item) => sum + item.dish.price * item.quantity, 0);
 
     const getNextStatus = (current: OrderStatus): OrderStatus | null => {
@@ -48,7 +49,8 @@ const OrderCard: React.FC<{ order: Order, onStatusChange: (orderId: string, newS
                     {order.items.map((item, index) => (
                         <li key={index} className="border-b border-neutral/30 pb-1">
                             <div className="flex justify-between font-medium">
-                                <span>{item.quantity}x {item.dish.name}</span>
+                                {/* Fix: Dish name is a LocalizedString, must access specific language property */}
+                                <span>{item.quantity}x {item.dish.name[lang as keyof LocalizedString]}</span>
                                 <span>{(item.dish.price * item.quantity).toFixed(2)}</span>
                             </div>
                             {item.notes && (

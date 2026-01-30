@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import WaiterDashboard from './pages/WaiterDashboard';
 import KitchenDashboard from './pages/KitchenDashboard';
 import MenuManagement from './pages/MenuManagement';
+import StaffManagement from './pages/StaffManagement'; // المكون الجديد
 import OrderTracking from './pages/OrderTracking';
 import OrderCreation from './pages/OrderCreation';
 import Reports from './pages/Reports';
@@ -51,6 +52,7 @@ const Main: React.FC = () => {
           
           <Route path="/admin" element={<ProtectedRoute role={Role.ADMIN}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/menu" element={<ProtectedRoute role={Role.ADMIN}><MenuManagement /></ProtectedRoute>} />
+          <Route path="/admin/staff" element={<ProtectedRoute role={Role.ADMIN}><StaffManagement /></ProtectedRoute>} />
           <Route path="/admin/reports" element={<ProtectedRoute role={Role.ADMIN}><Reports /></ProtectedRoute>} />
           
           <Route path="/waiter" element={<ProtectedRoute role={Role.WAITER}><WaiterDashboard /></ProtectedRoute>} />
@@ -76,14 +78,8 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
   const { user } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-  
-  if (role && user.role !== role) {
-     return <Navigate to="/" />;
-  }
-
+  if (!user) return <Navigate to="/login" />;
+  if (role && user.role !== role) return <Navigate to="/" />;
   return children;
 };
 

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { X } from 'lucide-react';
 import Card from './Card';
@@ -14,19 +15,25 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4" onClick={onClose}>
-      <Card className="w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 border-b border-neutral flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-neutral-dark">{title}</h2>
-          <button onClick={onClose} className="p-1 rounded-full text-neutral-dark opacity-60 hover:bg-muted hover:text-neutral-dark transition-colors">
-            <X size={24} />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex justify-center items-center p-4 transition-all duration-300" onClick={onClose}>
+      <Card 
+        className="w-full max-w-lg dark:bg-dark-card dark:border-dark-border border-2 animate-slide-up shadow-2xl overflow-hidden" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b border-neutral dark:border-gray-700 flex justify-between items-center bg-white dark:bg-dark-card">
+          <h2 className="text-xl font-black text-primary-dark dark:text-white tracking-tight">{title}</h2>
+          <button 
+            onClick={onClose} 
+            className="p-2 rounded-xl text-neutral-dark dark:text-gray-400 opacity-60 hover:bg-muted dark:hover:bg-gray-800 hover:opacity-100 transition-all"
+          >
+            <X size={20} />
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-6 max-h-[70vh] overflow-y-auto bg-white dark:bg-dark-card">
           {children}
         </div>
         {footer && (
-          <div className="p-4 bg-muted border-t border-neutral rounded-b-lg flex justify-end space-x-3">
+          <div className="p-4 bg-muted dark:bg-gray-800 border-t border-neutral dark:border-gray-700 flex justify-end gap-3">
             {footer}
           </div>
         )}

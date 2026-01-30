@@ -1,18 +1,19 @@
+
 import React from 'react';
 
 interface CardProps {
   children: React.ReactNode;
   className?: string;
-  // Fix: Add optional onClick handler to allow cards to be clickable.
+  style?: React.CSSProperties;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
-const Card: React.FC<CardProps> = ({ children, className = '', onClick }) => {
+const Card: React.FC<CardProps> = ({ children, className = '', onClick, style }) => {
   return (
     <div
-      className={`bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 ${className}`}
-      // Fix: Pass onClick to the div element.
+      className={`bg-white dark:bg-dark-card rounded-3xl shadow-md hover:shadow-xl transition-all duration-300 ${className}`}
       onClick={onClick}
+      style={style}
     >
       {children}
     </div>

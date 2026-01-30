@@ -1,49 +1,43 @@
-import React, { createContext, useState, useCallback } from 'react';
+
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 import type { User } from '../types';
 import { Role } from '../types';
 import { USERS } from '../constants';
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password?: string) => boolean;
+  login: (pin: string, password?: string) => { success: boolean, requiresPassword?: boolean, error?: string };
   logout: () => void;
+  allStaff: User[];
+  updateStaff: (staff: User[]) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [staff, setStaff] = useState<User[]>(USERS);
 
-  const login = useCallback((username: string, password?: string): boolean => {
-    const foundUser = USERS.find(u => u.username.toLowerCase() === username.toLowerCase());
+  const login = useCallback((pin: string, password?: string) => {
+    const foundUser = staff.find(u => u.pin === pin);
+    
     if (!foundUser) {
-      return false;
+      return { success: false, error: 'الرمز السري غير صحيح' };
     }
 
-    // Admin, Kitchen, and Bar roles require a password
-    if ([Role.ADMIN, Role.KITCHEN, Role.BAR].includes(foundUser.role)) {
-      if (foundUser.password === password) {
-        setUser(foundUser);
-        return true;
-      }
-      return false;
+    if (foundUser.role === Role.ADMIN) {
+      if (!password) return { success: false, requiresPassword: true };
+      if (foundUser.password !== password) return { success: false, error: 'كلمة المرور غير صحيحة' };
     }
 
-    // Waiters do not require a password
-    if (foundUser.role === Role.WAITER) {
-      setUser(foundUser);
-      return true;
-    }
+    setUser(foundUser);
+    return { success: true };
+  }, [staff]);
 
-    return false;
-  }, []);
-
-  const logout = useCallback(() => {
-    setUser(null);
-  }, []);
+  const logout = useCallback(() => setUser(null), []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, allStaff: staff, updateStaff: setStaff }}>
       {children}
     </AuthContext.Provider>
   );

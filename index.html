@@ -11,7 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      // التحقق من الثيم المحفوظ أو ثيم النظام
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
@@ -29,6 +37,10 @@
               'danger': '#EF4444',
               'kitchen-primary': '#F26C4F',
               'drinks-primary': '#0298C5',
+              // ألوان المظهر الداكن المخصصة
+              'dark-bg': '#0D1117',
+              'dark-card': '#161B22',
+              'dark-border': '#30363D'
             }
           }
         }
@@ -49,7 +61,7 @@
 }
 </script>
 </head>
-  <body class="bg-secondary font-sans text-neutral-dark">
+  <body class="bg-secondary dark:bg-dark-bg font-sans text-neutral-dark dark:text-gray-200 transition-colors duration-300">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

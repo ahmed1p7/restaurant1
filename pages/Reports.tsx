@@ -2,12 +2,14 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useRestaurantData } from '../hooks/useRestaurantData';
-import { OrderStatus } from '../types';
+import { OrderStatus, type LocalizedString } from '../types';
 import Card from '../components/Card';
 import { TrendingUp, Package, DollarSign } from 'lucide-react';
 
 const Reports: React.FC = () => {
   const { orders } = useRestaurantData();
+  // Get current language for localized strings in reporting
+  const lang = (localStorage.getItem('lang') as any) || 'ar';
 
   const completedOrders = useMemo(() => orders.filter(o => o.status === OrderStatus.COMPLETED), [orders]);
 
@@ -26,14 +28,15 @@ const Reports: React.FC = () => {
     completedOrders.forEach(order => {
       order.items.forEach(item => {
         if (!performance[item.dish.id]) {
-          performance[item.dish.id] = { name: item.dish.name, quantity: 0, revenue: 0 };
+          // Fix: Extract localized dish name string for chart labels
+          performance[item.dish.id] = { name: item.dish.name[lang as keyof LocalizedString], quantity: 0, revenue: 0 };
         }
         performance[item.dish.id].quantity += item.quantity;
         performance[item.dish.id].revenue += item.dish.price * item.quantity;
       });
     });
     return Object.values(performance).sort((a, b) => b.quantity - a.quantity);
-  }, [completedOrders]);
+  }, [completedOrders, lang]);
 
   const top5Dishes = dishPerformance.slice(0, 5);
 

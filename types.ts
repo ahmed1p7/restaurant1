@@ -6,21 +6,49 @@ export enum Role {
   BAR = 'bar',
 }
 
+export interface LocalizedString {
+  ar: string;
+  en: string;
+  it: string;
+}
+
+export interface UserPermissions {
+  canCancelOrder: boolean;
+  canApplyDiscount: boolean;
+  canViewReports: boolean;
+}
+
 export interface User {
   id: number;
   name: string;
-  username: string;
+  pin: string;
   role: Role;
   password?: string;
+  permissions: UserPermissions;
+}
+
+export enum MenuStyle {
+  GRID = 'grid',
+  BOOKLET = 'booklet',
+}
+
+export interface MenuPage {
+  id: string;
+  title: LocalizedString;
+  backgroundColor: string;
+  order: number;
+  category: string; // Internal category identifier
 }
 
 export interface Dish {
   id: number;
-  name: string;
-  description: string;
+  name: LocalizedString;
+  description: LocalizedString;
   price: number;
   category: string;
   imageUrl: string;
+  pageId?: string;
+  isOutOfStock?: boolean;
 }
 
 export enum OrderStatus {
@@ -35,6 +63,8 @@ export interface OrderItem {
   dish: Dish;
   quantity: number;
   notes?: string;
+  isAllergy?: boolean;
+  isReady?: boolean;
 }
 
 export interface Order {
@@ -44,20 +74,28 @@ export interface Order {
   status: OrderStatus;
   timestamp: Date;
   waiterId: number;
+  waiterName: string;
+  guestCount: number;
+  estimatedMinutes?: number;
 }
 
 export enum TableStatus {
     AVAILABLE = 'Available',
     OCCUPIED = 'Occupied',
+    RESERVED = 'Reserved',
 }
 
 export interface Table {
     id: number;
     capacity: number;
     status: TableStatus;
+    reservationName?: string;
 }
 
 export interface ScreenSettings {
   kitchenCategories: string[];
   barCategories: string[];
+  menuStyle: MenuStyle;
+  menuScale: number;
+  kitchenColumns: number;
 }
