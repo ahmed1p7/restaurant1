@@ -4,19 +4,22 @@ import { Link, useLocation } from 'react-router-dom';
 import { UtensilsCrossed, LogOut } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { Role } from '../types';
+import { uiTranslations } from '../translations';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const lang = (localStorage.getItem('lang') as any) || 'ar';
+  const t = uiTranslations[lang as keyof typeof uiTranslations];
 
   const navLinks = user?.role === Role.ADMIN ? [
-    { path: '/admin', label: 'لوحة التحكم' },
-    { path: '/admin/menu', label: 'المنيو' },
-    { path: '/orders', label: 'الطلبات' },
-    { path: '/admin/reports', label: 'التقارير' },
+    { path: '/admin', label: t.dashboard },
+    { path: '/admin/menu', label: t.menu },
+    { path: '/orders', label: t.orders },
+    { path: '/admin/reports', label: t.reports },
   ] : [
-    { path: '/waiter', label: 'الطاولات' },
-    { path: '/orders', label: 'متابعة الطلبات' },
+    { path: '/waiter', label: t.tables },
+    { path: '/orders', label: t.orderTracking },
   ];
 
   return (
@@ -25,7 +28,7 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <UtensilsCrossed className="h-8 w-8 ml-3 text-accent" />
-            <span className="font-bold text-xl tracking-tight">ياقوت</span>
+            <span className="font-bold text-xl tracking-tight">{t.appName}</span>
           </div>
           <nav className="hidden md:flex items-center space-x-reverse space-x-4">
             {navLinks.map(link => (
@@ -42,19 +45,19 @@ const Header: React.FC = () => {
               </Link>
             ))}
           </nav>
-          <div className="flex items-center">
-            <div className="ml-4 text-left hidden sm:block">
+          <div className="flex items-center gap-4">
+            <div className="text-left hidden sm:block">
               <p className="text-sm font-medium">{user?.name}</p>
               <p className="text-xs capitalize text-neutral opacity-80">
-                {user?.role === Role.ADMIN ? 'مشرف' : 'نادل'}
+                {user?.role === Role.ADMIN ? t.admin : t.waiter}
               </p>
             </div>
             <button
               onClick={logout}
               className="p-2 rounded-full hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
-              aria-label="تسجيل الخروج"
+              aria-label={t.logout}
             >
-              <LogOut className="h-6 w-6 transform rotate-180" />
+              <LogOut className={`h-6 w-6 transform ${lang === 'ar' ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>
