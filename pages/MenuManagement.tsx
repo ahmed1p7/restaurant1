@@ -15,7 +15,6 @@ const MenuManagement: React.FC = () => {
     screenSettings, updateScreenSettings 
   } = useRestaurantData();
 
-  // جلب لغة الواجهة الحالية
   const lang = (localStorage.getItem('lang') as any) || 'ar';
   const t = uiTranslations[lang as keyof typeof uiTranslations];
 
@@ -28,19 +27,18 @@ const MenuManagement: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'dishes' | 'pages'>('dishes');
 
-  // وظيفة التحقق من اكتمال الترجمات
   const validateTranslations = (obj: LocalizedString) => {
     return obj.ar.trim() !== '' && obj.en.trim() !== '' && obj.it.trim() !== '';
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
+    <div className="space-y-6 animate-fade-in" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+      <div className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${lang !== 'ar' ? 'md:flex-row-reverse' : ''}`}>
+        <div className={lang !== 'ar' ? 'text-left' : 'text-right'}>
           <h1 className="text-3xl font-black text-primary-dark dark:text-white">{t.menu}</h1>
-          <p className="text-neutral-dark dark:text-gray-400 opacity-60 font-medium italic">إدارة المحتوى المترجم يدوياً (AR / EN / IT)</p>
+          <p className="text-neutral-dark dark:text-gray-400 opacity-60 font-medium italic">{t.manualContentNotice}</p>
         </div>
-        <div className="flex gap-2">
+        <div className={`flex gap-2 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
           <Button variant="secondary" Icon={Settings2} onClick={() => setIsSettingsModalOpen(true)}>{t.settings}</Button>
           <Button Icon={Plus} onClick={() => { 
             if (activeTab === 'dishes') setIsDishModalOpen(true);
@@ -53,18 +51,18 @@ const MenuManagement: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex border-b border-neutral dark:border-gray-800">
+      <div className={`flex border-b border-neutral dark:border-gray-800 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
         <button 
             onClick={() => setActiveTab('dishes')}
             className={`px-6 py-3 font-bold transition-all border-b-4 ${activeTab === 'dishes' ? 'border-accent text-primary dark:text-accent' : 'border-transparent text-neutral-dark/40'}`}
         >
-            الأطباق
+            {t.dishesTab}
         </button>
         <button 
             onClick={() => setActiveTab('pages')}
             className={`px-6 py-3 font-bold transition-all border-b-4 ${activeTab === 'pages' ? 'border-accent text-primary dark:text-accent' : 'border-transparent text-neutral-dark/40'}`}
         >
-            الصفحات
+            {t.pagesTab}
         </button>
       </div>
 
@@ -74,12 +72,12 @@ const MenuManagement: React.FC = () => {
             <Card key={dish.id} className="overflow-hidden flex flex-col group border-2 border-transparent hover:border-accent transition-all dark:bg-dark-card">
                 <div className="relative h-40">
                     <img src={dish.imageUrl} className="w-full h-full object-cover" alt={dish.name.ar} />
-                    <div className="absolute top-2 left-2 bg-white/90 dark:bg-black/80 px-2 py-1 rounded font-bold text-sm text-primary dark:text-accent shadow-sm">
-                        {dish.price} ر.س
+                    <div className={`absolute top-2 ${lang === 'ar' ? 'left-2' : 'right-2'} bg-white/90 dark:bg-black/80 px-2 py-1 rounded font-bold text-sm text-primary dark:text-accent shadow-sm`}>
+                        {dish.price} {t.sar}
                     </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                    <div className="flex justify-between items-start mb-1">
+                <div className={`p-4 flex-grow flex flex-col ${lang !== 'ar' ? 'text-left' : 'text-right'}`}>
+                    <div className={`flex justify-between items-start mb-1 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
                         <h3 className="font-black text-lg text-primary-dark dark:text-white leading-tight">{dish.name[lang as keyof LocalizedString]}</h3>
                         <Globe size={14} className="text-accent opacity-50" />
                     </div>
@@ -87,7 +85,7 @@ const MenuManagement: React.FC = () => {
                         {pages.find(p => p.id === dish.pageId)?.title[lang as keyof LocalizedString] || '...'}
                     </p>
                     <p className="text-[10px] opacity-60 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed italic">{dish.description[lang as keyof LocalizedString]}</p>
-                    <div className="flex justify-end gap-2 mt-auto pt-4 border-t dark:border-gray-800">
+                    <div className={`flex justify-end gap-2 mt-auto pt-4 border-t dark:border-gray-800 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
                         <button onClick={() => { setEditingDish(dish); setIsDishModalOpen(true); }} className="p-2 hover:bg-muted dark:hover:bg-gray-800 rounded-lg text-primary dark:text-accent"><Edit size={16} /></button>
                         <button onClick={() => deleteDish(dish.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-danger"><Trash2 size={16} /></button>
                     </div>
@@ -98,10 +96,10 @@ const MenuManagement: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {pages.sort((a,b) => a.order - b.order).map(page => (
-                <Card key={page.id} className="p-6 border-r-8 dark:bg-dark-card" style={{ borderRightColor: page.backgroundColor }}>
-                    <div className="flex justify-between items-start mb-4">
-                        <div>
-                            <div className="flex items-center gap-2 mb-1">
+                <Card key={page.id} className={`p-6 border-accent dark:bg-dark-card ${lang === 'ar' ? 'border-r-8' : 'border-l-8'}`} style={{ [lang === 'ar' ? 'borderRightColor' : 'borderLeftColor']: page.backgroundColor }}>
+                    <div className={`flex justify-between items-start mb-4 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
+                        <div className={lang !== 'ar' ? 'text-left' : 'text-right'}>
+                            <div className={`flex items-center gap-2 mb-1 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
                                 <Hash size={14} className="text-neutral-dark/40" />
                                 <span className="text-sm font-bold opacity-40 uppercase">Order {page.order}</span>
                             </div>
@@ -109,7 +107,7 @@ const MenuManagement: React.FC = () => {
                         </div>
                         <Palette size={20} style={{ color: page.backgroundColor }} />
                     </div>
-                    <div className="flex gap-2 justify-end pt-4 border-t dark:border-gray-800">
+                    <div className={`flex gap-2 justify-end pt-4 border-t dark:border-gray-800 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
                         <Button size="sm" variant="secondary" onClick={() => { setEditingPage(page); setIsPageModalOpen(true); }}><Edit size={14} /></Button>
                         <Button size="sm" variant="danger" onClick={() => deletePage(page.id)}><Trash2 size={14} /></Button>
                     </div>
@@ -118,19 +116,18 @@ const MenuManagement: React.FC = () => {
         </div>
       )}
 
-      {/* نموذج الطبق المطور ليدعم اللغات الثلاث */}
-      <Modal isOpen={isDishModalOpen} onClose={() => setIsDishModalOpen(false)} title={editingDish ? 'تعديل طبق' : 'إضافة طبق جديد'}>
-          <div className="space-y-6 py-4">
+      <Modal isOpen={isDishModalOpen} onClose={() => setIsDishModalOpen(false)} title={editingDish ? t.editDish : t.addDish}>
+          <div className="space-y-6 py-4" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
               <section className="space-y-3 bg-muted dark:bg-gray-800/50 p-4 rounded-2xl">
-                  <h4 className="text-[10px] font-black opacity-40 uppercase flex items-center gap-2"><Globe size={12}/> أسماء الطبق (إجباري)</h4>
-                  <input type="text" placeholder="الاسم بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingDish?.name.ar} id="dish-name-ar" />
+                  <h4 className={`text-[10px] font-black opacity-40 uppercase flex items-center gap-2 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}><Globe size={12}/> {t.name} (AR / EN / IT)</h4>
+                  <input type="text" placeholder="الاسم بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingDish?.name.ar} id="dish-name-ar" dir="rtl" />
                   <input type="text" placeholder="Name in English..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingDish?.name.en} id="dish-name-en" dir="ltr" />
                   <input type="text" placeholder="Nome in Italiano..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingDish?.name.it} id="dish-name-it" dir="ltr" />
               </section>
 
               <section className="space-y-3 bg-muted dark:bg-gray-800/50 p-4 rounded-2xl">
-                  <h4 className="text-[10px] font-black opacity-40 uppercase flex items-center gap-2"><Globe size={12}/> وصف الطبق (إجباري)</h4>
-                  <textarea placeholder="الوصف بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl text-sm" defaultValue={editingDish?.description.ar} id="dish-desc-ar" />
+                  <h4 className={`text-[10px] font-black opacity-40 uppercase flex items-center gap-2 ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}><Globe size={12}/> {t.description} (AR / EN / IT)</h4>
+                  <textarea placeholder="الوصف بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl text-sm" defaultValue={editingDish?.description.ar} id="dish-desc-ar" dir="rtl" />
                   <textarea placeholder="Description in English..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl text-sm" defaultValue={editingDish?.description.en} id="dish-desc-en" dir="ltr" />
                   <textarea placeholder="Descrizione in Italiano..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl text-sm" defaultValue={editingDish?.description.it} id="dish-desc-it" dir="ltr" />
               </section>
@@ -144,7 +141,7 @@ const MenuManagement: React.FC = () => {
                       <label className="text-[10px] font-black opacity-40 uppercase px-2">{t.page}</label>
                       <select className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingDish?.pageId} id="dish-page">
                           <option value="">--</option>
-                          {pages.map(p => <option key={p.id} value={p.id}>{p.title.ar}</option>)}
+                          {pages.map(p => <option key={p.id} value={p.id}>{p.title[lang as keyof LocalizedString]}</option>)}
                       </select>
                   </div>
               </div>
@@ -165,33 +162,32 @@ const MenuManagement: React.FC = () => {
                   const selectedPage = pages.find(p => p.id === pageId);
 
                   if (!validateTranslations(name) || !validateTranslations(description)) {
-                    alert('يرجى ملء كافة الترجمات قبل الحفظ (AR / EN / IT)');
+                    alert(t.validateTranslationsError);
                     return;
                   }
                   
                   if (editingDish) updateDish({...editingDish, name, description, price, pageId, category: selectedPage?.category || ''});
                   else addDish({name, description, price, pageId, category: selectedPage?.category || ''});
                   setIsDishModalOpen(false);
-              }}>حفظ الطبق</Button>
+              }}>{t.saveDish}</Button>
           </div>
       </Modal>
 
-      {/* نموذج الصفحة المطور */}
-      <Modal isOpen={isPageModalOpen} onClose={() => setIsPageModalOpen(false)} title={editingPage ? 'تعديل صفحة' : 'إضافة صفحة جديدة'}>
-          <div className="space-y-6 py-4">
+      <Modal isOpen={isPageModalOpen} onClose={() => setIsPageModalOpen(false)} title={editingPage ? t.editPage : t.addPage}>
+          <div className="space-y-6 py-4" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
               <section className="space-y-3 bg-muted dark:bg-gray-800/50 p-4 rounded-2xl">
-                  <h4 className="text-[10px] font-black opacity-40 uppercase">عناوين الصفحة</h4>
-                  <input type="text" placeholder="العنوان بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingPage?.title.ar} id="page-title-ar" />
+                  <h4 className={`text-[10px] font-black opacity-40 uppercase ${lang !== 'ar' ? 'text-left' : 'text-right'}`}>{t.name} (AR / EN / IT)</h4>
+                  <input type="text" placeholder="العنوان بالعربية..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingPage?.title.ar} id="page-title-ar" dir="rtl" />
                   <input type="text" placeholder="Title in English..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingPage?.title.en} id="page-title-en" dir="ltr" />
                   <input type="text" placeholder="Titolo in Italiano..." className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-bold" defaultValue={editingPage?.title.it} id="page-title-it" dir="ltr" />
               </section>
 
               <div className="grid grid-cols-2 gap-4">
-                  <div className="flex gap-4 items-center bg-muted dark:bg-gray-800 p-3 rounded-xl">
-                      <label className="text-[10px] font-black opacity-40 uppercase">اللون:</label>
+                  <div className={`flex gap-4 items-center bg-muted dark:bg-gray-800 p-3 rounded-xl ${lang !== 'ar' ? 'flex-row-reverse' : ''}`}>
+                      <label className="text-[10px] font-black opacity-40 uppercase">{lang === 'ar' ? 'اللون:' : 'Color:'}</label>
                       <input type="color" className="w-10 h-10 rounded cursor-pointer border-none" defaultValue={editingPage?.backgroundColor || '#FDF5E6'} id="page-color" />
                   </div>
-                  <input type="number" placeholder="الترتيب" className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-black" defaultValue={editingPage?.order || pages.length + 1} id="page-order" />
+                  <input type="number" placeholder={lang === 'ar' ? 'الترتيب' : 'Order'} className="w-full p-3 border-2 border-neutral dark:bg-gray-900 dark:border-gray-700 rounded-xl font-black" defaultValue={editingPage?.order || pages.length + 1} id="page-order" />
               </div>
 
               <Button className="w-full py-5 text-xl font-black rounded-2xl shadow-xl" onClick={() => {
@@ -204,14 +200,14 @@ const MenuManagement: React.FC = () => {
                   const order = parseInt((document.getElementById('page-order') as HTMLInputElement).value);
 
                   if (!validateTranslations(title)) {
-                    alert('يرجى ملء كافة ترجمات العناوين');
+                    alert(t.validateTranslationsError);
                     return;
                   }
 
                   if (editingPage) updatePage({...editingPage, title, backgroundColor, order});
                   else addPage({title, backgroundColor, order, category: title.ar});
                   setIsPageModalOpen(false);
-              }}>حفظ الصفحة</Button>
+              }}>{t.savePage}</Button>
           </div>
       </Modal>
     </div>
